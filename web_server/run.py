@@ -219,7 +219,7 @@ with app.app_context():
     
     # Create all tables
     db.create_all()
-    print("✅ Database created successfully!")
+    print("Database created successfully!")
     
     # Create admin user if not exists
     if not User.query.filter_by(username='admin').first():
@@ -231,7 +231,7 @@ with app.app_context():
         admin.set_password('admin123')
         db.session.add(admin)
         db.session.commit()
-        print("✅ Admin user created (username: admin, password: admin123)")
+        print(" Admin user created (username: admin, password: admin123)")
 
 if __name__ == '__main__':
     print("\n" + "="*60)
