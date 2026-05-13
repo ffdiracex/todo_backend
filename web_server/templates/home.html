@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}My Tasks - Todo App{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"> New-Task</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_task') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Task-Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="1"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select" name="priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label class="form-label">Due Date (YYYY-MM-DD)</label>
+                        <input type="text" class="form-control" name="due_date" placeholder="2024-12-31">
+                        <small style="font-size: 12px; color: #666;">Format: Year-Month-Day (example: 2024-12-31)</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tags</label>
+                        <input type="text" class="form-control" name="tags" placeholder="work, personal, urgent">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100"
+                    style="background-color: #238636 !important; background: #238636 !important; border-color: #238636 !important; background-image: none !important; box-shadow: none !important;"
+                    >+ Add Task</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">My Tasks</h5>
+            </div>
+            <div class="card-body">
+                {% if tasks %}
+                    {% for task in tasks %}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div style="flex: 1;">
+                                        <h6 class="card-title mb-1">
+                                            {% if task.status == 'completed' %}
+                                                <s>{{ task.title }}</s>
+                                            {% else %}
+                                                {{ task.title }}
+                                            {% endif %}
+                                        </h6>
+                                        {% if task.description %}
+                                            <p class="card-text text-muted small">{{ task.description }}</p>
+                                        {% endif %}
+                                        <div class="mt-2">
+                                            <span class="badge bg-{% if task.priority == 'high' %}danger{% elif task.priority == 'medium' %}warning text-dark{% else %}success{% endif %}">
+                                                {{ task.priority|upper }}
+                                            </span>
+                                            {% if task.status == 'pending' %}
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% endif %}
+                                            {% if task.due_date %}
+                                                <span class="badge bg-info text-dark">Due: {{ task.due_date.strftime('%Y-%m-%d') }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="ms-3">
+                                        {% if task.status == 'pending' %}
+                                            <a href="{{ url_for('complete_task', task_id=task.id) }}" 
+                                               class="btn btn-sm btn-success mb-1 w-100"
+                                               style="color: #ffffff !important;">Complete</a>
+                                        {% endif %}
+                                        <a href="{{ url_for('delete_task', task_id=task.id) }}" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px; margin-left: 5px;" onclick="return confirm('Delete this task?')">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <p class="mb-0">No tasks yet. Add your first task above!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

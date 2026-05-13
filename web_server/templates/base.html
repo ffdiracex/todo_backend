@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/basic.css') }}?v=2">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="container">
+        <a href="{{ url_for('home') if current_user.is_authenticated else url_for('login') }}">Todo App</a>
+        {% if current_user.is_authenticated %}
+        <span style="float: right;">
+            Welcome, {{ current_user.username }}
+            <a href="{{ url_for('logout') }}" style="margin-left: 15px;">Logout</a>
+        </span>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category if category != 'message' else 'info' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

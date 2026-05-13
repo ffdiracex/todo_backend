@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+
+    <!-- Add Task Form -->
+    <div class="card">
+        <div class="card-header">Add New Task</div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('add_task') }}">
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">Task Title *</label>
+                    <input type="text" class="form-control" name="title" required>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description" rows="3"></textarea>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">Priority</label>
+                    <select class="form-control" name="priority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">Due Date</label>
+                    <input type="date" class="form-control" name="due_date">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">Tags</label>
+                    <input type="text" class="form-control" name="tags" placeholder="work, personal">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Add Task</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Statistics and Tasks -->
+    <div>
+        <!-- Statistics -->
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">Statistics</div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                    <div class="stat-box">
+                        <div class="stat-number">{{ pending_tasks|length if pending_tasks else 0 }}</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">{{ completed_tasks|length if completed_tasks else 0 }}</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">{{ overdue_tasks|length if overdue_tasks else 0 }}</div>
+                        <div class="stat-label">Overdue</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">{{ (completed_tasks|length / (pending_tasks|length + completed_tasks|length) * 100)|round|int if (pending_tasks|length + completed_tasks|length) > 0 else 0 }}%</div>
+                        <div class="stat-label">Complete</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tasks List -->
+        <div class="card">
+            <div class="card-header">My Tasks</div>
+            <div class="card-body">
+                {% if pending_tasks or completed_tasks %}
+                    <!-- Pending Tasks -->
+                    {% if pending_tasks %}
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="font-size: 16px; margin-bottom: 10px;">Pending Tasks</h4>
+                            {% for task in pending_tasks %}
+                                <div class="task-item">
+                                    <div class="task-title">{{ task.title }}</div>
+                                    {% if task.description %}
+                                        <div style="font-size: 13px; color: #666; margin: 5px 0;">{{ task.description }}</div>
+                                    {% endif %}
+                                    <div class="task-meta">
+                                        Priority: {{ task.priority|upper }}
+                                        {% if task.due_date %}
+                                            | Due: {{ task.due_date.strftime('%Y-%m-%d') }}
+                                        {% endif %}
+                                        {% if task.tags %}
+                                            | Tags: {{ task.tags }}
+                                        {% endif %}
+                                    </div>
+                                    <div style="margin-top: 10px;">
+                                        <a href="{{ url_for('complete_task', task_id=task.id) }}" class="btn btn-success" style="padding: 5px 10px; font-size: 12px;">Complete</a>
+                                        <a href="{{ url_for('delete_task', task_id=task.id) }}" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="return confirm('Delete this task?')">Delete</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Completed Tasks -->
+                    {% if completed_tasks %}
+                        <div>
+                            <h4 style="font-size: 16px; margin-bottom: 10px;">Completed Tasks</h4>
+                            {% for task in completed_tasks %}
+                                <div class="task-item" style="opacity: 0.7;">
+                                    <div class="task-title"><s>{{ task.title }}</s></div>
+                                    <div class="task-meta">
+                                        Completed: {{ task.completed_at.strftime('%Y-%m-%d') if task.completed_at else 'Yes' }}
+                                    </div>
+                                    <div style="margin-top: 10px;">
+                                        <a href="{{ url_for('delete_task', task_id=task.id) }}" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="return confirm('Delete this task?')">Delete</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <p>No tasks yet. Add your first task above.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

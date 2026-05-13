@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 50px auto;">
+    <div class="card">
+        <div class="card-header">Login</div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('login') }}">
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" name="username" required autofocus>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" required>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <input type="checkbox" id="remember_me" name="remember_me">
+                    <label for="remember_me">Remember me</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
