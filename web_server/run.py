@@ -6,7 +6,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
 basedir = os.path.abspath(os.path.dirname(__file__)) # so we can store the file path => !don't repeat yourself!
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super-secret-larpmaxxing'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'instance', 'todo.db')
